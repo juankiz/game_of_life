@@ -27,12 +27,21 @@ module GameOfLife::Models
     end
 
     def neighbors_for(row_postion, column_position)
-      neighbor_range(row_postion, max_row).each do |row|
-        neighbor_range(column_position, max_column).each do |column|
+      neighbors = neighbor_range(row_postion, max_row).flat_map do |row|
+        neighbor_range(column_position, max_column).map do |column|
           next if row_postion == row && column_position == column
 
-          yield read(row, column)
+          read(row, column)
         end
+      end
+
+      neighbors.compact
+    end
+
+    def advance!
+      each_position do |(row, column, depth)|
+        cell = read(row, column)
+        cell.advance!
       end
     end
 
@@ -43,14 +52,14 @@ module GameOfLife::Models
 
       nil
     end
-  end
 
-  private
+    private
 
-  def neighbor_range(initial_postion, max_position)
-    initial_range_value = initial_postion.positive? ? initial_postion.pred : 0
-    last_range_value = max_position > initial_postion > initial_postion.succ : max_position
+    def neighbor_range(initial_postion, max_position)
+      initial_range_value = initial_postion.positive? ? initial_postion.pred : 0
+      last_range_value = max_position > initial_postion ? initial_postion.succ : max_position
 
-    (initial_range_value..last_range_value)
+      (initial_range_value..last_range_value)
+    end
   end
 end

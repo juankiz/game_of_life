@@ -1,8 +1,8 @@
-module GameOfLife::Services
-  class BoardFiller
+module GameOfLife
+  class Services::BoardFiller
     def self.perform(board)
       board.each_position do |(row, column)|
-        board.write(row, column, Cell.new(randomized_intial_state))
+        board.write(row, column, Models::Cell.new(randomized_intial_state))
       end
     end
 
